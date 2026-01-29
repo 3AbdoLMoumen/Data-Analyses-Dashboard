@@ -96,18 +96,5 @@ else:
     st.info("No suitable charts for the selected combination.")
 
 st.write(
-	pd.DataFrame({
-    "count": df[numerical_cols].count(),
-    "mean": df[numerical_cols].mean(),
-    "median": df[numerical_cols].median(),
-    "mode": df[numerical_cols].apply(lambda x: x.mode().iloc[0] if not x.mode().empty else np.nan),
-    "min": df[numerical_cols].min(),
-    "max": df[numerical_cols].max(),
-    "range": df[numerical_cols].max() - df[numerical_cols].min(),
-    "variance": df[numerical_cols].var(),
-    "std_dev": df[numerical_cols].std(),
-    "Q1": df[numerical_cols].quantile(0.25),
-    "Q3": df[numerical_cols].quantile(0.75),
-    "IQR": df[numerical_cols].quantile(0.75) - df[numerical_cols].quantile(0.25)
-})
+	StatisticalParams(df, numerical_cols)
 )
