@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import math
+from scipy.stats import pearsonr
 
 def Range(col):
     return np.max(col) - np.min(col)
@@ -36,3 +37,21 @@ def StatisticalParams(df, numerical_cols):
     "Q3": df[numerical_cols].quantile(0.75),
     "IQR": df[numerical_cols].quantile(0.75) - df[numerical_cols].quantile(0.25)
 })
+
+def Correlations(x, y, alpha=0.05):
+    r, p = pearsonr(x, y)
+
+    if r > 0:
+        relation = "positively correlated"
+    elif r < 0:
+        relation = "negatively correlated"
+    else:
+        relation = "not correlated"
+
+    significance = "statistically significant" if p < alpha else "not statistically significant"
+
+    return (
+        f"The variables are {relation} "
+        f"(Pearson r = {r:.3f}, p = {p:.3e}); "
+        f"the correlation is {significance} at α = {alpha}."
+    )
