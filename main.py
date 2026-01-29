@@ -5,7 +5,7 @@ import streamlit as st
 import seaborn as sns
 import plotly.express as px
 from utils import *
-
+from models import *
 # --- Load Data ---
 df = sns.load_dataset("tips").copy()
 
@@ -79,7 +79,30 @@ if suggested_charts:
     if chart_type == "Histogram":
         fig = px.histogram(plot_df, x=x_col, y=y_col)
     elif chart_type == "Scatter":
-        fig = px.scatter(plot_df, x=x_col, y=y_col, trendline="ols")
+	    rad = st.sidebar.radio("Apply ML Model?", ["None", "Clustering-KMeans", "Anomaly Detection"])
+	    X = plot_df[[x_col, y_col]]  # Must be 2D for ML models
+
+	    if rad == "Clustering-KMeans":
+	        n_clusters = st.sidebar.slider("n_Clusters", 2, 10, 3, 1)
+	        colors = Cluster(X, n_clusters)  # 1D cluster labels
+	        fig = px.scatter(plot_df, x=x_col, y=y_col, color=colors, trendline="ols", color_continuous_scale="Inferno")
+
+	    elif rad == "Anomaly Detection":
+	        contamination = st.sidebar.slider("Contamination", 0.01, 0.2, 0.05, 0.01)
+	        labels = AnomalyDetection(X, contamination=contamination)
+	        label_map = {1: "Normal", -1: "Anomaly"}
+	        color_labels = pd.Series(labels).map(label_map)
+	        fig = px.scatter(plot_df, x=x_col, y=y_col, color=color_labels)
+
+	    elif rad == "None":
+	        cat_choice = st.sidebar.selectbox("Color by categorical column (optional)", [None] + categorical_cols)
+	        if cat_choice is not None:
+	            color_labels = plot_df[cat_choice]
+	        else:
+	            color_labels = None
+	        fig = px.scatter(plot_df, x=x_col, y=y_col, color=color_labels, trendline="ols")
+
+
     elif chart_type == "Line":
         fig = px.line(plot_df, x=x_col, y=y_col)
     elif chart_type == "Bar":
