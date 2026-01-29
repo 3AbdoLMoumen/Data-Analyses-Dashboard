@@ -6,3 +6,4 @@ This Project aims at creating a data visualization and analyses dashboard that t
 - Automatic calculation of central tendency and dispersion parameters
 - Possibility to group numerical data into categorical features
 - Interactive Graphs
+- Exportable Graphs and Tables
