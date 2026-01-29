@@ -6,6 +6,7 @@ import seaborn as sns
 import plotly.express as px
 from utils import *
 from models import *
+import seaborn as sns
 
 df = sns.load_dataset("tips").copy()
 numerical_cols = df.select_dtypes(include=["int64", "float64"]).columns.tolist()
@@ -13,7 +14,7 @@ categorical_cols = df.select_dtypes(include=["object", "category"]).columns.toli
 
 st.title("Interactive Data Dashboard")
 st.sidebar.header("Select Tool")
-tool = st.sidebar.selectbox("", ["Graphics", "Parameters"])
+tool = st.sidebar.selectbox("", ["Graphics", "Parameters", "Pair Plot"])
 
 if tool == "Graphics":
     st.sidebar.header("Select Variables")
@@ -125,3 +126,7 @@ if tool == "Graphics":
 
 elif tool == "Parameters":
     st.write(StatisticalParams(df, numerical_cols))
+elif tool=="Pair Plot":
+	cat_choice = st.sidebar.selectbox("Color by categorical column (optional)", [None] + categorical_cols)
+	pair_fig = sns.pairplot(df, hue=cat_choice) 
+	st.pyplot(pair_fig)
