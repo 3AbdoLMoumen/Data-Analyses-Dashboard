@@ -11,7 +11,7 @@ st.set_page_config(
     page_title="Data Analytics Dashboard",
     page_icon="📊",
 )
-
+st.title("📊📈 Data Analytics Dashboard")
 df = None
 
 upload_placeholder = st.empty()
@@ -24,7 +24,7 @@ if df is not None:
     numerical_cols = df.select_dtypes(include=["int64", "float64"]).columns.tolist()
     categorical_cols = df.select_dtypes(include=["object", "category"]).columns.tolist()
     dim = False
-    st.title("📊📈 Data Analytics Dashboard")
+    
     st.sidebar.header("Select Tool 🛠️")
     tool = st.sidebar.selectbox("", ["Graphics", "Parameters", "Pair Plot"])
 
