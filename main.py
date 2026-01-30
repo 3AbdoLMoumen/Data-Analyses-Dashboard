@@ -8,15 +8,23 @@ from utils import *
 from models import *
 import seaborn as sns
 
+
+st.set_page_config(
+    page_title="Data Analytics Dashboard",
+    page_icon="📊",
+)
+
+
 df = sns.load_dataset("tips").copy()
 numerical_cols = df.select_dtypes(include=["int64", "float64"]).columns.tolist()
 categorical_cols = df.select_dtypes(include=["object", "category"]).columns.tolist()
-
-st.title("Interactive Data Dashboard")
-st.sidebar.header("Select Tool")
+dim = False
+st.title("📊📈 Data Analytics Dashboard")
+st.sidebar.header("Select Tool 🛠️")
 tool = st.sidebar.selectbox("", ["Graphics", "Parameters", "Pair Plot"])
 
 if tool == "Graphics":
+    st.header("Graphical Representations 📊📉")
     st.sidebar.header("Select Variables")
 
     x_var = st.sidebar.selectbox("X variable", df.columns.tolist())
@@ -82,26 +90,55 @@ if tool == "Graphics":
             fig = px.histogram(plot_df, x=x_col, y=y_col)
 
         elif chart_type == "Scatter":
+            dim = st.sidebar.checkbox("3D")
             rad = st.sidebar.radio("Apply ML Model?", ["None", "Clustering-KMeans", "Anomaly Detection"])
-            X = plot_df[[x_col, y_col]]
 
-            if rad == "Clustering-KMeans":
-                n_clusters = st.sidebar.slider("n_Clusters", 2, 10, 3, 1)
-                colors = Cluster(X, n_clusters)
-                fig = px.scatter(plot_df, x=x_col, y=y_col, color=colors, trendline="ols")
+            if not dim:
+                X = plot_df[[x_col, y_col]]
 
-            elif rad == "Anomaly Detection":
-                contamination = st.sidebar.slider("Contamination", 0.01, 0.2, 0.05, 0.01)
-                labels = AnomalyDetection(X, contamination=contamination)
-                label_map = {1: "Normal", -1: "Anomaly"}
-                color_labels = pd.Series(labels).map(label_map)
-                fig = px.scatter(plot_df, x=x_col, y=y_col, color=color_labels)
-
+                if rad == "Clustering-KMeans":
+                    fig = px.scatter(plot_df, x=x_col, y=y_col, color=Cluster(X, st.sidebar.slider("n_Clusters", 2, 10, 3)))
+                elif rad == "Anomaly Detection":
+                    fig = px.scatter(
+                        plot_df,
+                        x=x_col,
+                        y=y_col,
+                        color=pd.Series(
+                            AnomalyDetection(X, st.sidebar.slider("Contamination", 0.01, 0.2, 0.05))
+                        ).map({1: "Normal", -1: "Anomaly"}),
+                    )
+                else:
+                    fig = px.scatter(
+                        plot_df,
+                        x=x_col,
+                        y=y_col,
+                        color=st.sidebar.selectbox("Color by categorical column (optional)", [None] + categorical_cols),
+                    )
             else:
-                cat_choice = st.sidebar.selectbox("Color by categorical column (optional)", [None] + categorical_cols)
-                color_labels = plot_df[cat_choice] if cat_choice else None
-                fig = px.scatter(plot_df, x=x_col, y=y_col, color=color_labels, trendline="ols")
+                z_col = st.sidebar.selectbox("Z variable", numerical_cols)
+                X = plot_df[[x_col, y_col, z_col]]
 
+                if rad == "Clustering-KMeans":
+                    fig = px.scatter_3d(plot_df, x=x_col, y=y_col, z=z_col, color=Cluster(X, st.sidebar.slider("n_Clusters", 2, 10, 3)))
+                elif rad == "Anomaly Detection":
+                    fig = px.scatter_3d(
+                        plot_df,
+                        x=x_col,
+                        y=y_col,
+                        z=z_col,
+                        color=pd.Series(
+                            AnomalyDetection(X, st.sidebar.slider("Contamination", 0.01, 0.2, 0.05))
+                        ).map({1: "Normal", -1: "Anomaly"}),
+                    )
+                else:
+                    fig = px.scatter_3d(
+                        plot_df,
+                        x=x_col,
+                        y=y_col,
+                        z=z_col,
+                        color=st.sidebar.selectbox("Color by categorical column (optional)", [None] + categorical_cols),
+                    )
+                
         elif chart_type == "Bar":
             fig = px.bar(plot_df, x=x_col, y=y_col)
 
@@ -121,12 +158,15 @@ if tool == "Graphics":
     else:
         st.info("No suitable charts for the selected combination.")
 
-    if corr:
+    if corr and not dim:
+        st.header("Correlation Between X&Y Variables 📉📈")
         st.write(corr)
 
 elif tool == "Parameters":
+    st.header("📋📟 Statistical Parameters")
     st.write(StatisticalParams(df, numerical_cols))
 elif tool=="Pair Plot":
-	cat_choice = st.sidebar.selectbox("Color by categorical column (optional)", [None] + categorical_cols)
-	pair_fig = sns.pairplot(df, hue=cat_choice) 
-	st.pyplot(pair_fig)
+    st.header("📶 Pair Plot")
+    cat_choice = st.sidebar.selectbox("Color by categorical column (optional)", [None] + categorical_cols)
+    pair_fig = sns.pairplot(df, hue=cat_choice) 
+    st.pyplot(pair_fig)
