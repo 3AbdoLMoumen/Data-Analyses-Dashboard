@@ -1,6 +1,8 @@
 # 📊 Data-Analyses-Dashboard
 
-This project is a **data visualization and analysis dashboard** that allows you to upload any dataset (CSV) and interactively explore it using **automatic graph suggestions, statistical analysis, and machine learning tools**.  
+This project is a **data visualization and analysis dashboard** that allows you to upload any dataset (CSV) and interactively explore it using **automatic graph suggestions, statistical analysis, and machine learning tools**. 
+ 
+https://data-analyses-dashboard.streamlit.app/
 
 ### 🚀 Key Features
 - **Automatic Graph Suggestion** – The dashboard suggests the best visualization based on your selected variables  
