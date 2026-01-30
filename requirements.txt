@@ -5,4 +5,4 @@ seaborn
 plotly
 scikit-learn
 matplotlib
-altair
+altair==4.2.2
