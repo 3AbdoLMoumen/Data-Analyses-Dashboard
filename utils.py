@@ -7,17 +7,21 @@ def Range(col):
     return np.max(col) - np.min(col)
 
 def num_classes(R):
-    return int(math.sqrt(R)) 
+    return max(int(math.sqrt(R)), 2)  
 
 def numerical2classes(col):
-    R = col.max() - col.min()
-    numC = int(math.sqrt(R)) if R > 0 else 1
+    R = Range(col)
+    numC = num_classes(R)
     r = R / numC if numC > 0 else 1
     start = col.min()
+    
     bins = [start + i * r for i in range(numC)]
-    bins.append(col.max() + 1e-8)
-    labels = [f"{int(bins[i])}-{int(bins[i+1])}" for i in range(numC)]
+    bins.append(col.max() + 1e-8)  
+    
+    labels = [f"{bins[i]:.2f}-{bins[i+1]:.2f}" for i in range(numC)]
+    
     return pd.cut(col, bins=bins, labels=labels, include_lowest=True)
+
 def Frequency(col):
 	freq = col.value_counts()
 	return freq
