@@ -14,7 +14,7 @@ This project is a **data visualization and analysis dashboard** that allows you 
 
 ### 💻 Installation
 ```bash
-git clone <repo-url>
+git clone https://github.com/3AbdoLMoumen/Data-Analyses-Dashboard
 cd Data-Analyses-Dashboard
 pip install -r requirements.txt
 ```
