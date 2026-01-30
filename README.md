@@ -23,6 +23,9 @@ pip install -r requirements.txt
 ```bash
 streamlit run app.py
 ```
+
+![Dashboard Demo](Demo.gif)
+
 - Upload your CSV file 📁
 - Dashboard automatically detects numerical and categorical columns
 - Select X and Y variables (Z for 3D plots optional)

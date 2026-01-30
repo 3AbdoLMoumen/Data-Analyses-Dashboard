@@ -155,7 +155,7 @@ if df is not None:
 
             elif chart_type == "Pie Chart":
                 if y_col == "Frequency":
-                    fig = px.pie(plot_df, names=x_col)
+                    fig = px.pie(plot_df, names=x_col, values="Frequency")
                 else:
                     fig = px.pie(plot_df, names=y_col, facet_col=x_col)
 
