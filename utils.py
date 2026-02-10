@@ -60,12 +60,12 @@ def pearson_correlation(x, y, alpha=0.05):
     )
 
     return (
-        "test: Pearson"
-        f"r: {r}"
-        f"p: {p}"
-        f"alpha: {alpha}"
-        f"relation: {relation}"
-        f"significance: {significance}"
+        "test: Pearson "
+        f"r: {r} "
+        f"p: {p} "
+        f"alpha: {alpha} "
+        f"relation: {relation} "
+        f"significance: {significance} "
     )
 def spearman_correlation(x, y, alpha=0.05):
     rho, p = spearmanr(x, y)
@@ -81,10 +81,10 @@ def spearman_correlation(x, y, alpha=0.05):
         else "not statistically significant"
     )
     return (
-        "test: Spearman"
-        f"rho: {rho}"
-        f"p: {p}"
-        f"alpha: {alpha}"
-        f"relation: {relation}"
-        f"significance: {significance}"
+        "test: Spearman "
+        f"rho: {rho} "
+        f"p: {p} "
+        f"alpha: {alpha} "
+        f"relation: {relation} "
+        f"significance: {significance} "
     )
