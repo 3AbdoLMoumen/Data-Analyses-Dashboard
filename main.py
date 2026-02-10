@@ -6,20 +6,36 @@ import seaborn as sns
 import plotly.express as px
 from utils import *
 from models import *
-import seaborn as sns
-
 
 st.set_page_config(
     page_title="Data Analytics Dashboard",
     page_icon="📊",
 )
 
+st.title("📊📈 Data Analytics Dashboard")
 
-df = sns.load_dataset("tips").copy()
+st.sidebar.header("Upload your dataset 🗂️")
+uploaded_file = st.sidebar.file_uploader(
+    "Upload CSV or Excel file", type=["csv", "xlsx"]
+)
+
+if uploaded_file:
+    try:
+        if uploaded_file.name.endswith(".csv"):
+            df = pd.read_csv(uploaded_file)
+        else:
+            df = pd.read_excel(uploaded_file)
+    except Exception as e:
+        st.error(f"Error loading dataset: {e}")
+        st.stop()
+else:
+    st.info("Please upload a CSV or Excel file to proceed.")
+    st.stop()
+
 numerical_cols = df.select_dtypes(include=["int64", "float64"]).columns.tolist()
 categorical_cols = df.select_dtypes(include=["object", "category"]).columns.tolist()
+
 dim = False
-st.title("📊📈 Data Analytics Dashboard")
 st.sidebar.header("Select Tool 🛠️")
 tool = st.sidebar.selectbox("", ["Graphics", "Parameters", "Pair Plot"])
 
@@ -63,7 +79,6 @@ if tool == "Graphics":
         plot_df = df
 
     suggested_charts = []
-
     if x_is_numeric:
         if y_is_numeric:
             suggested_charts = ["Histogram", "Scatter"]
@@ -87,6 +102,7 @@ if tool == "Graphics":
             corr = spearman_correlation(encode(df[x_col]), encode(df[y_col]))
         except:
             pass
+
     if suggested_charts:
         chart_type = st.selectbox("Choose chart type", suggested_charts)
 
@@ -142,7 +158,7 @@ if tool == "Graphics":
                         z=z_col,
                         color=st.sidebar.selectbox("Color by categorical column (optional)", [None] + categorical_cols),
                     )
-                
+
         elif chart_type == "Bar":
             fig = px.bar(plot_df, x=x_col, y=y_col)
 
@@ -169,8 +185,9 @@ if tool == "Graphics":
 elif tool == "Parameters":
     st.header("📋📟 Statistical Parameters")
     st.write(StatisticalParams(df, numerical_cols))
-elif tool=="Pair Plot":
+
+elif tool == "Pair Plot":
     st.header("📶 Pair Plot")
     cat_choice = st.sidebar.selectbox("Color by categorical column (optional)", [None] + categorical_cols)
-    pair_fig = sns.pairplot(df, hue=cat_choice) 
+    pair_fig = sns.pairplot(df, hue=cat_choice)
     st.pyplot(pair_fig)
