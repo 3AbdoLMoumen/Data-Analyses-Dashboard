@@ -1,33 +1,35 @@
 import pandas as pd
 import numpy as np
 import math
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, spearmanr
+from sklearn.preprocessing import LabelEncoder
+
+def encode(series):
+    if series.dtype == "object" or str(series.dtype) == "category":
+        return LabelEncoder().fit_transform(series)
+    return series
 
 def Range(col):
     return np.max(col) - np.min(col)
 
 def num_classes(R):
-    return max(int(math.sqrt(R)), 2)  
+    return int(math.sqrt(R)) 
 
 def numerical2classes(col):
-    R = Range(col)
-    numC = num_classes(R)
+    R = col.max() - col.min()
+    numC = int(math.sqrt(R)) if R > 0 else 1
     r = R / numC if numC > 0 else 1
     start = col.min()
-    
     bins = [start + i * r for i in range(numC)]
-    bins.append(col.max() + 1e-8)  
-    
-    labels = [f"{bins[i]:.2f}-{bins[i+1]:.2f}" for i in range(numC)]
-    
+    bins.append(col.max() + 1e-8)
+    labels = [f"{int(bins[i])}-{int(bins[i+1])}" for i in range(numC)]
     return pd.cut(col, bins=bins, labels=labels, include_lowest=True)
-
 def Frequency(col):
-	freq = col.value_counts()
-	return freq
+    freq = col.value_counts()
+    return freq
 
 def StatisticalParams(df, numerical_cols):
-	return pd.DataFrame({
+    return pd.DataFrame({
     "count": df[numerical_cols].count(),
     "mean": df[numerical_cols].mean(),
     "median": df[numerical_cols].median(),
@@ -42,20 +44,47 @@ def StatisticalParams(df, numerical_cols):
     "IQR": df[numerical_cols].quantile(0.75) - df[numerical_cols].quantile(0.25)
 })
 
-def Correlations(x, y, alpha=0.05):
+
+def pearson_correlation(x, y, alpha=0.05):
     r, p = pearsonr(x, y)
 
-    if r > 0:
-        relation = "positively correlated"
-    elif r < 0:
-        relation = "negatively correlated"
-    else:
-        relation = "not correlated"
+    relation = (
+        "positively correlated" if r > 0 else
+        "negatively correlated" if r < 0 else
+        "not correlated"
+    )
 
-    significance = "statistically significant" if p < alpha else "not statistically significant"
+    significance = (
+        "statistically significant" if p < alpha
+        else "not statistically significant"
+    )
 
     return (
-        f"The variables are {relation} "
-        f"(Pearson r = {r:.3f}, p = {p:.3e}); "
-        f"the correlation is {significance} at α = {alpha}."
+        "test: Pearson"
+        f"r: {r}"
+        f"p: {p}"
+        f"alpha: {alpha}"
+        f"relation: {relation}"
+        f"significance: {significance}"
+    )
+def spearman_correlation(x, y, alpha=0.05):
+    rho, p = spearmanr(x, y)
+
+    relation = (
+        "positively correlated" if rho > 0 else
+        "negatively correlated" if rho < 0 else
+        "not correlated"
+    )
+
+    significance = (
+        "statistically significant" if p < alpha
+        else "not statistically significant"
+    )
+    return (
+        "test: Spearman"
+        f"rho: {rho}"
+        f"p: {p}"
+        f"alpha: {alpha}"
+        f"relation: {relation}"
+        f"significance: {significance}"
     )
